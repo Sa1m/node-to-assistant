@@ -45,11 +45,11 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             googleRequestJson = json.loads(googleRequest)
             print (googleRequestJson)
             #{"location": "living", "state": "on", "device": "lights"}
-            if 'what' in googleRequestJson['result']['resolvedQuery']:
-                ESPparameters = googleRequestJson['result']['parameters']
+            if 'what' in googleRequestJson['queryResult']['queryText']:
+                ESPparameters = googleRequestJson['queryResult']['parameters']
                 ESPparameters['query'] = '?'
             else:
-                ESPparameters = googleRequestJson['result']['parameters']
+                ESPparameters = googleRequestJson['queryResult']['parameters']
                 ESPparameters['query'] = 'cmd'
             print (ESPparameters)
             # send command to ESP over websocket
