@@ -43,7 +43,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
 
             googleRequest = self.reader._buffer.decode('utf-8')
             googleRequestJson = json.loads(googleRequest)
-
+            print (googleRequestJson)
             #{"location": "living", "state": "on", "device": "lights"}
             if 'what' in googleRequestJson['result']['resolvedQuery']:
                 ESPparameters = googleRequestJson['result']['parameters']
@@ -51,6 +51,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             else:
                 ESPparameters = googleRequestJson['result']['parameters']
                 ESPparameters['query'] = 'cmd'
+            print (ESPparameters)
             # send command to ESP over websocket
             if self.rwebsocket== None:
                 print("Device is not connected!")
@@ -63,7 +64,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             print(self.rddata)
             state = json.loads(self.rddata)['state']
             self.rddata = '{"speech": "It is turned '+state+'", "displayText": "It is turned '+state+'"}'
-
+            print (state)
             response = '\r\n'.join([
                 'HTTP/1.1 200 OK',
                 'Content-Type: text/json',
@@ -89,12 +90,12 @@ async def ws_handler(websocket, path):
     except Exception as e:
         print(e)
     finally:
-        print("")
+        print("Exiting")
 
 
 
 port = int(os.getenv('PORT', 5687))
-start_server = websockets.serve(ws_handler, '', port, klass=HttpWSSProtocol)
+start_server = websockets.serve(ws_handler, '', port, class=HttpWSSProtocol)
 # logger.info('Listening on port %d', port)
 
 asyncio.get_event_loop().run_until_complete(start_server)
