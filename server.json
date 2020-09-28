@@ -1,0 +1,7 @@
+{
+  "name": "IOT ESP8266 Google Assistant",
+  "description": "Works with IOT devices over the firewall with google home",
+  "repository": "https://github.com/Sa1m/node-to-assistant",
+  "logo": "https://node-js-sample.herokuapp.com/node.png",
+  "keywords": ["esp8266", "google assistant", "wihtout ifttt", "iot", "arduino"]
+}
