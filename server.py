@@ -48,6 +48,9 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             if 'what' in googleRequestJson['queryResult']['queryText']:
                 ESPparameters = googleRequestJson['queryResult']['parameters']
                 ESPparameters['query'] = '?'
+            elif 'level' in googleRequestJson['queryResult']['queryText']:
+                ESPparameters = googleRequestJson['queryResult']['parameters']
+                ESPparameters['query'] = 'tank'
             else:
                 ESPparameters = googleRequestJson['queryResult']['parameters']
                 ESPparameters['query'] = 'cmd'
@@ -62,7 +65,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             #{"speech": "It is working", "displayText": "It is working"}
             print(self.rddata)
             state = json.loads(self.rddata)['state']
-            self.rddata = '{"speech": "It is turned '+state+'", "displayText": "It is turned '+state+'"}'
+            self.rddata = '{"textToSpeech": "It is turned '+state+'", "text": "It is turned '+state+'"}'
 
             response = '\r\n'.join([
                 'HTTP/1.1 200 OK',
