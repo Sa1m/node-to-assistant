@@ -65,8 +65,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             #{"speech": "It is working", "displayText": "It is working"}
             print(self.rddata)
             state = json.loads(self.rddata)['state']
-            self.rddata = '{"fulfillmentMessages": [ { "text": { "text": [ "It is turned '+state+'" ]}  } ] }'
-
+            self.rddata = '{"payload": { "google": { "expectUserResponse": true, "richResponse": { "items": [{ "simpleResponse": { "textToSpeech": "It is turned '+state+'" }}]}}}, "fulfillmentMessages": [ { "text": { "text": [ "It is turned '+state+'" ]}  } ] }'
             response = '\r\n'.join([
                 'HTTP/1.1 200 OK',
                 'Content-Type: application/json',
