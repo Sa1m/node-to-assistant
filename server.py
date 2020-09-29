@@ -74,7 +74,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
                 ''+self.rddata+'',
                 '"session": {    "id": "example_session_id", "params": {}  },',
                 '"prompt": {   "override": true,   "firstSimple": { "speech": "Hello World.", "text": "test" }',
-  })
+            ])
 
 exports.ActionsOnGoogleFulfillment = functions.https.onRequest(app)
             ])
