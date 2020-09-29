@@ -65,18 +65,13 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             #{"speech": "It is working", "displayText": "It is working"}
             print(self.rddata)
             state = json.loads(self.rddata)['state']
-            self.rddata = '{"textToSpeech": "It is turned '+state+'", "text": "It is turned '+state+'"}'
+            self.rddata = '{"prompt": { "override": false, "firstSimple": { "speech": "It is turned '+state+'", "text": "It is turned '+state+'"}}}'
 
             response = '\r\n'.join([
                 'HTTP/1.1 200 OK',
                 'Content-Type: text/json',
                 '',
                 ''+self.rddata+'',
-                '"session": {    "id": "example_session_id", "params": {}  },',
-                '"prompt": {   "override": true,   "firstSimple": { "speech": "Hello World.", "text": "test" }',
-            ])
-
-exports.ActionsOnGoogleFulfillment = functions.https.onRequest(app)
             ])
         except Exception as e:
             print(e)
