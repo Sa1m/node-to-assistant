@@ -43,26 +43,26 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
 
             googleRequest = self.reader._buffer.decode('utf-8')
             googleRequestJson = json.loads(googleRequest)
-
+            req = googleRequestJson['queryResult']['intent']['displayName']
             #{"location": "living", "state": "on", "device": "lights"}
-            if 'what' in googleRequestJson['queryResult']['queryText']:
-                ESPparameters = googleRequestJson['queryResult']['parameters']
-                ESPparameters['query'] = '?'
-            elif 'level' in googleRequestJson['queryResult']['queryText']:
-                ESPparameters = googleRequestJson['queryResult']['parameters']
-                ESPparameters['query'] = 'tank'
-            else:
+            if  req == 'control':
                 ESPparameters = googleRequestJson['queryResult']['parameters']
                 ESPparameters['query'] = 'cmd'
+            elif req == 'Level':
+                ESPparameters['query'] = 'tank'
+            elif req == 'Light':
+                ESPparameters['query'] = '?'
+            else:
+                print("Unkown intent")
+                
             # send command to ESP over websocket
             if self.rwebsocket== None:
                 print("Device is not connected!")
                 return
             await self.rwebsocket.send(json.dumps(ESPparameters))
 
-            #wait for response and send it back to API.ai as is
+            #Wait for response and send it back to Dialogueflow as is
             self.rddata = await self.rwebsocket.recv()
-            #{"speech": "It is working", "displayText": "It is working"}
             print(self.rddata)
             state = json.loads(self.rddata)['state']
             level = json.loads(self.rddata)['level']
