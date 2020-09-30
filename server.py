@@ -65,12 +65,20 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             #{"speech": "It is working", "displayText": "It is working"}
             print(self.rddata)
             state = json.loads(self.rddata)['state']
-            self.rddata = '{"payload": { "google": { "expectUserResponse": true, "richResponse": { "items": [{ "simpleResponse": { "textToSpeech": "It is turned '+state+'" }}]}}}, "fulfillmentMessages": [ { "text": { "text": [ "It is turned '+state+'" ]}  } ] }'
+            level = json.loads(self.rddata)['level']
+            
+            if ESPparameters['query'] == 'cmd'
+                self.rddata = 'Turning '+state
+            elif ESPparameters['query'] == '?'
+                self.rddata = 'It is Turned '+state
+            elif ESPparameters['query'] == 'tank'
+                self.rddata = 'The water tank is '+level+'% full'
+                
             response = '\r\n'.join([
                 'HTTP/1.1 200 OK',
                 'Content-Type: application/json',
                 '',
-                ''+self.rddata+'',
+                '{"payload": { "google": { "expectUserResponse": true, "richResponse": { "items": [{ "simpleResponse": { "textToSpeech": "'+self.rddata+'" }}]}}}, "fulfillmentMessages": [ { "text": { "text": [ '+self.rddata+' ]}  } ] }',
             ])
         except Exception as e:
             print(e)
