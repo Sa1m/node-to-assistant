@@ -81,7 +81,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
                 'HTTP/1.1 200 OK',
                 'Content-Type: application/json',
                 '',
-                '{"payload": { "google": { "expectUserResponse": true, "richResponse": { "items": [{ "simpleResponse": { "textToSpeech": "'+self.rddata+'" }}]}}}, "fulfillmentMessages": [ { "text": { "text": [ '+self.rddata+' ]}  } ] }',
+                '{"payload": { "google": { "expectUserResponse": true, "richResponse": { "items": [{ "simpleResponse": { "textToSpeech": "'+self.rddata+'" }}]}}}, "fulfillmentMessages": [ { "text": { "text": [ "'+self.rddata+'" ]}  } ] }',
             ])
         except Exception as e:
             print(e)
