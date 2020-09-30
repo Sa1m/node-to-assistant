@@ -44,7 +44,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             googleRequest = self.reader._buffer.decode('utf-8')
             googleRequestJson = json.loads(googleRequest)
             req = googleRequestJson['queryResult']['intent']['displayName']
-            #{"location": "living", "state": "on", "device": "lights"}
+            
             if  req == 'control':
                 ESPparameters = googleRequestJson['queryResult']['parameters']
                 ESPparameters['query'] = 'cmd'
