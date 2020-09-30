@@ -13,7 +13,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             method, path, version = request_line[:-2].decode().split(None, 2)
             #websockets.accept()
         except Exception as e:
-            print(e.args)
+            print(e.args,16)
             self.writer.close()
             self.ws_server.unregister(self)
 
@@ -30,7 +30,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             try:
                 return await self.http_handler(method, path, version)
             except Exception as e:
-                print(e)
+                print(e, 33)
             finally:
 
                 self.writer.close()
@@ -84,7 +84,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
                 '{"payload": { "google": { "expectUserResponse": true, "richResponse": { "items": [{ "simpleResponse": { "textToSpeech": "'+self.rddata+'" }}]}}}, "fulfillmentMessages": [ { "text": { "text": [ "'+self.rddata+'" ]}  } ] }',
             ])
         except Exception as e:
-            print(e)
+            print(e, 87)
         self.writer.write(response.encode())
 
 def updateData(data):
@@ -100,9 +100,9 @@ async def ws_handler(websocket, path):
             data = await websocket.recv()
             updateData(data)
     except Exception as e:
-        print(e)
+        print(e, 103)
     finally:
-        print("")
+        print("Done")
 
 
 
