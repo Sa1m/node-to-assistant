@@ -67,12 +67,14 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             state = json.loads(self.rddata)['state']
             level = json.loads(self.rddata)['level']
             
-            if ESPparameters['query'] == 'cmd'
+            if ESPparameters['query'] == 'cmd':
                 self.rddata = 'Turning '+state
-            elif ESPparameters['query'] == '?'
+            elif ESPparameters['query'] == '?':
                 self.rddata = 'It is Turned '+state
-            elif ESPparameters['query'] == 'tank'
+            elif ESPparameters['query'] == 'tank':
                 self.rddata = 'The water tank is '+level+'% full'
+            else:
+                self.rddata = 'There was a problem while communicating'
                 
             response = '\r\n'.join([
                 'HTTP/1.1 200 OK',
