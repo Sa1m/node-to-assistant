@@ -11,7 +11,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
         try:
             request_line, headers = await websockets.http.read_message(self.reader)
             method, path, version = request_line[:-2].decode().split(None, 2)
-            #websockets.accept()
+            websockets.accept()
         except Exception as e:
             print(e.args,16)
             self.writer.close()
@@ -41,7 +41,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
         response = ''
         try:
 
-            googleRequest = await self.rwebsocket.recv()
+            googleRequest = await self.reader._buffer.decode('utf-8')
             print(googleRequest)
             googleRequestJson = json.loads(googleRequest)
             
