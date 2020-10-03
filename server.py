@@ -12,7 +12,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             request_line, headers = await websockets.http.read_message(self.reader)
             method, path, version = request_line[:-2].decode().split(None, 2)
         except Exception as e:
-            print(e.args,16)
+            print(e.args)
             self.writer.close()
             self.ws_server.unregister(self)
             raise
@@ -28,19 +28,16 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             try:
                 return await self.http_handler(method, path, version)
             except Exception as e:
-                print(e, 33)
+                print(e)
             finally:
-
                 self.writer.close()
                 self.ws_server.unregister(self)
-
 
     async def http_handler(self, method, path, version):
         response = ''
         try:
 
             googleRequest = self.reader._buffer.decode('utf-8')
-            print(googleRequest)
             googleRequestJson = json.loads(googleRequest)
             
             req = googleRequestJson['queryResult']['intent']['displayName']
@@ -90,7 +87,6 @@ def updateData(data):
     HttpWSSProtocol.rddata = data
 
 async def ws_handler(websocket, path):
-    game_name = 'g1'
     try:
         HttpWSSProtocol.rwebsocket = websocket
         await websocket.send(json.dumps({'event': 'OK'}))
@@ -99,11 +95,9 @@ async def ws_handler(websocket, path):
             data = await websocket.recv()
             updateData(data)
     except Exception as e:
-        print(e, 103)
+        print(e)
     finally:
         print("Done")
-
-
 
 port = int(os.getenv('PORT', 5687))
 start_server = websockets.serve(ws_handler, '', port, klass=HttpWSSProtocol)
