@@ -5,7 +5,7 @@ from flask import Flask, request
 import urllib.parse
 import json
 import re
-
+import os
 
 app = Flask(__name__)
 
@@ -40,5 +40,7 @@ def print_test():
     print(payload)
     return ("", 200, None)
 
+
 if __name__ == '__main__':
-    app.run(port=process.env.PORT, use_reloader=True)
+    portt = int(os.environ.get("PORT", 5000))
+    app.run(port=portt, use_reloader=True)
