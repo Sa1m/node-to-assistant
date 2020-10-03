@@ -11,12 +11,10 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
         try:
             request_line, headers = await websockets.http.read_message(self.reader)
             method, path, version = request_line[:-2].decode().split(None, 2)
-            websockets.accept()
         except Exception as e:
             print(e.args,16)
             self.writer.close()
             self.ws_server.unregister(self)
-
             raise
 
         # TODO: Check headers etc. to see if we are to upgrade to WS.
