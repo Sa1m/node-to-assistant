@@ -41,10 +41,10 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
         response = ''
         try:
 
-            googleRequest = self.reader._buffer.decode('utf-8')
+            googleRequest = await self.reader._buffer.decode('utf-8')
             print(googleRequest)
             googleRequestJson = json.loads(googleRequest)
-            print(googleRequestJson)
+            
             req = googleRequestJson['queryResult']['intent']['displayName']
             ESPparameters = googleRequestJson['queryResult']['parameters']
             if  req == 'control':
