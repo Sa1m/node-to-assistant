@@ -1,46 +1,107 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from flask import Flask, request
-import urllib.parse
+import websockets
+import asyncio
 import json
-import re
-import os
-
-app = Flask(__name__)
+import time, os
 
 
-def parse_request(req):
-    """
-    Parses application/json request body data into a Python dictionary
-    """
-    payload = req.get_data()
-    payload = urllib.parse.unquote_plus(payload)
-    payload = re.sub('payload=', '', payload)
-    payload = json.loads(payload)
+class HttpWSSProtocol(websockets.WebSocketServerProtocol):
+    rwebsocket = None
+    rddata = None
+    async def handler(self):
+        try:
+            request_line, headers = await websockets.http.read_message(self.reader)
+            method, path, version = request_line[:-2].decode().split(None, 2)
+        except Exception as e:
+            print(e.args)
+            self.writer.close()
+            self.ws_server.unregister(self)
+            raise
 
-    return payload
+        # TODO: Check headers etc. to see if we are to upgrade to WS.
+        if path == '/ws':
+            # HACK: Put the read data back, to continue with normal WS handling.
+            self.reader.feed_data(bytes(request_line))
+            self.reader.feed_data(headers.as_bytes().replace(b'\n', b'\r\n'))
 
+            return await super(HttpWSSProtocol, self).handler()
+        else:
+            try:
+                return await self.http_handler(method, path, version)
+            except Exception as e:
+                print(e)
+            finally:
+                self.writer.close()
+                self.ws_server.unregister(self)
 
-@app.route('/', methods=['GET'])
-def index():
-    """
-    Go to localhost:5000 to see a message
-    """
-    return ('This is a website.', 200, None)
+    async def http_handler(self, method, path, version):
+        response = ''
+        try:
 
+            googleRequest = self.reader._buffer.decode('utf-8')
+            googleRequestJson = json.loads(googleRequest)
+            
+            req = googleRequestJson['queryResult']['intent']['displayName']
+            ESPparameters = googleRequestJson['queryResult']['parameters']
+            if  req == 'control':
+                ESPparameters['query'] = 'cmd'
+            elif req == 'Level':
+                ESPparameters['query'] = 'tank'
+            elif req == 'Light':
+                ESPparameters['query'] = '?'
+            else:
+                print("Unkown intent")
+                
+            # send command to ESP over websocket
+            if self.rwebsocket== None:
+                print("Device is not connected!")
+                return
+            await self.rwebsocket.send(json.dumps(ESPparameters))
 
-@app.route('/api/print', methods=['POST'])
-def print_test():
-    """
-    Send a POST request to localhost:5000/api/print with a JSON body with a "p" key
-    to print that message in the server console.
-    """
-    payload = parse_request(request)
-    print(payload)
-    return ("", 200, None)
+            #Wait for response and send it back to Dialogueflow as is
+            self.rddata = await self.rwebsocket.recv()
+            print(self.rddata)
+            state = json.loads(self.rddata)['state']
+            level = json.loads(self.rddata)['level']
+            cmnd = json.loads(self.rddata)['query']
+            
+            if cmnd == 'cmd':
+                self.rddata = 'Turning '+state
+            elif cmnd == '?':
+                self.rddata = 'It is Turned '+state
+            elif cmnd == 'tank':
+                self.rddata = 'The water tank is '+level+'% full'
+            else:
+                self.rddata = 'There was a problem while communicating'
+                
+            response = '\r\n'.join([
+                'HTTP/1.1 200 OK',
+                'Content-Type: application/json',
+                '',
+                '{"payload": { "google": { "expectUserResponse": true, "richResponse": { "items": [{ "simpleResponse": { "textToSpeech": "'+self.rddata+'" }}]}}}, "fulfillmentMessages": [ { "text": { "text": [ "'+self.rddata+'" ]}  } ] }',
+            ])
+        except Exception as e:
+            print(e)
+        self.writer.write(response.encode())
 
+def updateData(data):
+    HttpWSSProtocol.rddata = data
 
-if __name__ == '__main__':
-    portt = int(os.environ.get("PORT", 5000))
-    app.run(port=portt, use_reloader=True)
+async def ws_handler(websocket, path):
+    try:
+        HttpWSSProtocol.rwebsocket = websocket
+        await websocket.send(json.dumps({'event': 'OK'}))
+        data ='{"empty":"empty"}'
+        while True:
+            data = await websocket.recv()
+            updateData(data)
+    except Exception as e:
+        print(e)
+    finally:
+        print("Done")
+
+port = int(os.getenv('PORT', 5687))
+start_server = websockets.serve(ws_handler, '', port, klass=HttpWSSProtocol)
+# logger.info('Listening on port %d', port)
+
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_forever()
