@@ -80,7 +80,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
                 '{"payload": { "google": { "expectUserResponse": true, "richResponse": { "items": [{ "simpleResponse": { "textToSpeech": "'+self.rddata+'" }}]}}}, "fulfillmentMessages": [ { "text": { "text": [ "'+self.rddata+'" ]}  } ] }',
             ])
         except Exception as e:
-            print(e, 87)
+            print(e)
         self.writer.write(response.encode())
 
 def updateData(data):
