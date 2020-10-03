@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask, request
-from urllib import unquote_plus
+import urllib.parse
 import json
 import re
 
@@ -15,7 +15,7 @@ def parse_request(req):
     Parses application/json request body data into a Python dictionary
     """
     payload = req.get_data()
-    payload = unquote_plus(payload)
+    payload = urllib.parse.unquote_plus(payload)
     payload = re.sub('payload=', '', payload)
     payload = json.loads(payload)
 
