@@ -78,7 +78,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
                 self.rddata = 'The water tank is '+level+'% full'
             elif cmnd == 'calib_d':
                 self.rddata = 'Tank Diameter is set to '+diameter+'cm'
-            elif cmnd == 'calib_d':
+            elif cmnd == 'calib_h':
                 self.rddata = 'Tank Height is set to '+height+'cm'
             else:
                 self.rddata = 'There was a problem while communicating'
