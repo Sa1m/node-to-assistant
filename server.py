@@ -42,12 +42,16 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             
             req = googleRequestJson['queryResult']['intent']['displayName']
             ESPparameters = googleRequestJson['queryResult']['parameters']
-            if  req == 'control':
+            if  req == 'Ctrl-light':
                 ESPparameters['query'] = 'cmd'
             elif req == 'Level':
                 ESPparameters['query'] = 'tank'
             elif req == 'Light':
                 ESPparameters['query'] = '?'
+            elif req == 'Calib-diameter':
+                ESPparameters['query'] = 'calib_d'
+            elif req == 'Calib-height':
+                ESPparameters['query'] = 'calib_h'
             else:
                 print("Unkown intent")
                 
@@ -63,6 +67,8 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             state = json.loads(self.rddata)['state']
             level = json.loads(self.rddata)['level']
             cmnd = json.loads(self.rddata)['query']
+            diameter = json.loads(self.rddata)['diameter']
+            height = json.loads(self.rddata)['height']
             
             if cmnd == 'cmd':
                 self.rddata = 'Turning '+state
@@ -70,6 +76,10 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
                 self.rddata = 'It is Turned '+state
             elif cmnd == 'tank':
                 self.rddata = 'The water tank is '+level+'% full'
+            elif cmnd == 'calib_d':
+                self.rddata = 'Tank Diameter is set to '+diameter+'cm'
+            elif cmnd == 'calib_d':
+                self.rddata = 'Tank Height is set to '+height+'cm'
             else:
                 self.rddata = 'There was a problem while communicating'
                 
