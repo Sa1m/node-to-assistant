@@ -52,6 +52,8 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
                 ESPparameters['query'] = 'calib_d'
             elif req == 'Calib-height':
                 ESPparameters['query'] = 'calib_h'
+            elif req == 'Calib':
+                ESPparameters['query'] = 'calib'
             else:
                 print("Unkown intent")
                 
@@ -80,6 +82,8 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
                 self.rddata = 'Tank Diameter is set to '+diameter+'cm'
             elif cmnd == 'calib_h':
                 self.rddata = 'Tank Height is set to '+height+'cm'
+            elif cmnd == 'calib':
+                self.rddata = 'Tank Height is '+height+'cm and Diameter is '+diameter+'cm'
             else:
                 self.rddata = 'There was a problem while communicating'
                 
