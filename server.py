@@ -89,7 +89,7 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             elif cmnd == 'calib_h':
                 self.rddata = 'Tank Height is set to '+height+'cm'
             elif cmnd == 'calib':
-                self.rddata = 'Tank Height is '+height+'cm and Diameter is '+diameter+'cm'
+                self.rddata = 'Tank Height is '+height+'cm and Diameter is '+diameter+'cm with Threshold of '+thresh+'cm'
             elif cmnd == 'rst':
                 self.rddata = 'Reset successfully'
             elif cmnd == 'thresh':
