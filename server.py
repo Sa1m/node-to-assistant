@@ -56,6 +56,8 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
                 ESPparameters['query'] = 'calib'
             elif req == 'Reset':
                 ESPparameters['query'] = 'rst'
+            elif req == 'Thresh':
+                ESPparameters['query'] = 'thresh'
             else:
                 print("Unkown intent")
                 
@@ -73,6 +75,8 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
             cmnd = json.loads(self.rddata)['query']
             diameter = json.loads(self.rddata)['diameter']
             height = json.loads(self.rddata)['height']
+            thresh = json.loads(self.rddata)['thresh']
+
             
             if cmnd == 'cmd':
                 self.rddata = 'Turning '+state
@@ -88,6 +92,8 @@ class HttpWSSProtocol(websockets.WebSocketServerProtocol):
                 self.rddata = 'Tank Height is '+height+'cm and Diameter is '+diameter+'cm'
             elif cmnd == 'rst':
                 self.rddata = 'Reset successfully'
+            elif cmnd == 'thresh':
+                self.rddata = 'Measuring Threshold is set to '+thresh+'cm'
             else:
                 self.rddata = 'There was a problem while communicating'
                 
